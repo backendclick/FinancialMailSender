@@ -1,0 +1,62 @@
+.mt10{
+    margin-top: 10px;
+} 
+
+.mr40{
+    margin-right: 40px;
+} 
+
+
+.bt-shadow{
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+header {
+    background-color: #292965;
+    color: white;
+}
+
+header h3 {
+    margin: 0;
+}
+
+.collection{
+    float: left;
+    width: 100%;
+}
+
+.collection-item{
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+.send-again p{
+    margin: 0;
+    margin-right: 50px;  
+}
+
+.status{
+    padding: 0 10px 0 12px;
+    text-align: center;
+}
+
+.status i, 
+.status span{
+    color: #828282;
+}
+
+.status span{
+    display: block;
+    font-size: 10px;
+    margin-top: 0px;
+    line-height: 10px;
+}
+
+.status i{
+    font-size: 32px;
+}
+
+
+
+

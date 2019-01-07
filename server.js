@@ -66,12 +66,21 @@ app.post('/list', (req, res) => {
 
         Promise.all(inserts).then(values => { 
             console.log("resultado do promise all", values);
+            counteredValues = [];
+            for(let i=0;i<values.length;i++){
+                values[i].key = i;
+            }
             res.send(
                 values
             );
         });
         
     });
+});
+
+app.post("/sendMails", (req)=>{
+    console.log("Requisição recebida em /sendMails");
+    console.log("Body recebido", req.body);
 });
 
 function getCode(fileName, month){

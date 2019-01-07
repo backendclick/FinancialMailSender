@@ -1,28 +1,21 @@
 import React, { Component } from 'react';
+import BoletosList from "./components/BoletosList";
 import logo from './logo.svg';
-import './App.css';
-
+import './css/style.css';
 class App extends Component {
-  render() {
+render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+      <div>
+        <header className="bt-shadow">
+          <div className="container">
+            <h3>FMS</h3>
+          </div>
         </header>
+        <main>
+          <BoletosList />
+        </main>
       </div>
     );
   }
 }
-
 export default App;

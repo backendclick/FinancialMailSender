@@ -9,10 +9,13 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "mongodb": "^3.1.10"
+    "material-icons-react": "^1.0.4",
+    "mongodb": "^3.1.10",
+    "react-materialize": "^2.6.0",
+    "react-switch": "^3.0.4",
+    "yarn": "^1.12.3"
   },
   "devDependencies": {
     "concurrently": "^4.0.1"
-  },
-  "proxy": "http://localhost:5000/"
+  }
 }
