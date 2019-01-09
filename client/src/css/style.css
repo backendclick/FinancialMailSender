@@ -57,6 +57,13 @@ header h3 {
     font-size: 32px;
 }
 
-
-
+/* Lista de boletos*/
+.total-boletos {
+    position: fixed;
+    top: 7px;
+    color: white;
+    right: 16%;
+    font-size: 20px;
+    font-weight: bold;
+}
 

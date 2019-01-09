@@ -4,40 +4,40 @@ import MaterialIcon, {colorPalette} from 'material-icons-react';
 import ItemBoleto from './ItemBoleto';
 
 class BoletosList extends Component {
-  state = {
-    response: '',
-    post: '',
-    responseToPost: '',
-    lastUpdate : '',
-    boletos : []
-    // ,
-    // boletos : [
-    //   {
-    //       "_id": "5c21f6b4847da112eff0d51c",
-    //       "code": "AMONTENEGRO",
-    //       "name": "Amontenegro Advogados",
-    //       "mail": "tarapi007@gmail.com;diegopereiracalcada@gmail.com",
-    //       "file": "BOLETO JAN 2019 - AMONTENEGRO.pdf"
-    //   },
-    //   {
-    //       "_id": "5c21f6e6847da112eff0d529",
-    //       "code": "LYONCONSTRUTORA",
-    //       "name": "Lyon Construtora",
-    //       "mail": "diegopereiracalcada@gmail.com",
-    //       "file": "BOLETO JAN 2019 - LYONCONSTRUTORA.pdf"
-    //   }
-    // ]
-  };
-
   constructor(props){
     super(props);
+    this.state =  {
+      response: '',
+      post: '',
+      responseToPost: '',
+      lastUpdate : '',
+      boletos : [
+        {
+            "_id": "5c21f6b4847da112eff0d51c",
+            "code": "AMONTENEGRO",
+            "name": "Amontenegro Advogados",
+            "mail": "tarapi007@gmail.com;diegopereiracalcada@gmail.com",
+            "file": "BOLETO JAN 2019 - AMONTENEGRO.pdf",
+            "willBeSent" : true
+        },
+        {
+            "_id": "5c21f6e6847da112eff0d529",
+            "code": "LYONCONSTRUTORA",
+            "name": "Lyon Construtora",
+            "mail": "diegopereiracalcada@gmail.com",
+            "file": "BOLETO JAN 2019 - LYONCONSTRUTORA.pdf",
+            "willBeSent" : false
+        }
+      ],
+      total : 10
+    };
     this.handleOnSendMailsClick = this.handleOnSendMailsClick.bind(this);
-    this.handleUpdateBoletosOnClick = this.handleUpdateBoletosOnClick.bind(this);
   }
 
   componentDidMount() {
-    console.log("didMount invoked");
-    this.updateBoletos();
+    console.log("componentDidMount invoked");
+    // comentado para dev
+    //this.updateBoletos();
   }
 
   callBoletosApi = async () => {
@@ -63,15 +63,6 @@ class BoletosList extends Component {
         .catch((data) => {
           console.error("catch...", data);
         });
-  }
-
-  handleUpdateBoletosOnClick(){
-    this.updateBoletos();
-  }
-
-  handleOnIBSendSwitchChange(){
-    console.log("handleOnIBSendSwitchChange - invoked");
-
   }
 
   updateBoletos(){
@@ -110,13 +101,24 @@ class BoletosList extends Component {
     this.setState({boletos : body});
   }
 
+  changeWillBeSent = (index, willBeSent) =>{
+    console.log("[BoletosList] - function alteraWillBeSent invoked. Param index:" + index + " - Param willBeSent:" + willBeSent);
+    let boletos = this.state.boletos;
+    boletos[index].willBeSent = willBeSent;
+    this.setState({"boletos" : boletos });
+  }
+
   render() {
       return (
         <div className="container">
+          <div><span className="total-boletos">Total: {this.state.total}</span></div>
           <ul className="collection">
               {
-                this.state.boletos.map((boleto)=>
-                  <ItemBoleto handleOnSendSwitchChange={this.handleOnIBSendSwitchChange} boleto={boleto} />
+                this.state.boletos.map((boleto, index)=>
+                  <ItemBoleto 
+                      index={index} 
+                      boleto={boleto}
+                      changeWillBeSent={this.changeWillBeSent}  /> 
                 )
               }
           </ul>

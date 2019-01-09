@@ -3,16 +3,9 @@ import Switch from "react-switch";
 
 class ItemBoleto extends Component {
 
-    constructor() {
-        super();
-        this.handleOnChange = this.handleOnChange.bind(this);
-    }
-    
-    handleOnChange(checked) {
-        console.log("param checked:", checked);
-        console.log("atual state:", this.state);
-
-        this.props.boleto.checked = checked;
+    changeWillBeSent = () => {
+        console.log("handleOnAnyChange. this.props.boleto.willBeSent: ", this.props.boleto.willBeSent);
+        this.props.changeWillBeSent(this.props.index, !this.props.boleto.willBeSent);
     }
 
     render() {
@@ -27,8 +20,8 @@ class ItemBoleto extends Component {
                     <label htmlFor="send-switch">
                         <span>Enviar</span>
                         <Switch
-                            onChange={this.props.handleOnSendSwitchChange}
-                            checked={this.props.boleto}
+                            onChange={this.changeWillBeSent}
+                            checked={this.props.boleto.willBeSent}
                             id="send-switch"
                         />
                     </label>
