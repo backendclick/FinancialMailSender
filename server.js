@@ -126,6 +126,7 @@ async function getClient(code, fileName){
                 console.log("Finalizada montagem do cliente: ", code);
                 console.log("Clients array recuperado", clients);
                 clients[0].file = fileName;
+                clients[0].willBeSent = true;
                 // clients[0].sent = getSendStatus();
                 resolve(clients[0]);
               });

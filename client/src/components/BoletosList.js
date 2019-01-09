@@ -11,33 +11,15 @@ class BoletosList extends Component {
       post: '',
       responseToPost: '',
       lastUpdate : '',
-      boletos : [
-        {
-            "_id": "5c21f6b4847da112eff0d51c",
-            "code": "AMONTENEGRO",
-            "name": "Amontenegro Advogados",
-            "mail": "tarapi007@gmail.com;diegopereiracalcada@gmail.com",
-            "file": "BOLETO JAN 2019 - AMONTENEGRO.pdf",
-            "willBeSent" : true
-        },
-        {
-            "_id": "5c21f6e6847da112eff0d529",
-            "code": "LYONCONSTRUTORA",
-            "name": "Lyon Construtora",
-            "mail": "diegopereiracalcada@gmail.com",
-            "file": "BOLETO JAN 2019 - LYONCONSTRUTORA.pdf",
-            "willBeSent" : false
-        }
-      ],
-      total : 10
+      boletos : [ ],
+      total : ''
     };
     this.handleOnSendMailsClick = this.handleOnSendMailsClick.bind(this);
   }
 
   componentDidMount() {
     console.log("componentDidMount invoked");
-    // comentado para dev
-    //this.updateBoletos();
+    this.updateBoletos();
   }
 
   callBoletosApi = async () => {
@@ -65,14 +47,18 @@ class BoletosList extends Component {
         });
   }
 
-  updateBoletos(){
-    console.log("handleUpdateBoletosOnClick invoked");
+  handleUpdateBoletosOnClick = () => {
+    this.updateBoletos();
+  }
+
+  updateBoletos = () =>{
+    console.log("updateBoletos invoked");
     this.callBoletosApi()
         .then(boletos => {
             // this.setState({ responseToPost: res, lastUpdate : new Date() });
-            console.log("handleUpdateBoletosOnClick - resposta:", boletos);
+            console.log("updateBoletos - resposta:", boletos);
             console.log("State atual:  ", this.state);
-            this.setState({boletos : boletos, lastUpdate : new Date().toString()});
+            this.setState({boletos : boletos, total: boletos.length, lastUpdate : new Date().toString()});
           })
         .catch(err => console.log(err));
   }
