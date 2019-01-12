@@ -16,11 +16,11 @@ class App extends Component {
   }
   pingBackEnd = () => {
     fetch("/bdPing")
-        .then((resposta)=>
+        .then(resposta=>
           resposta.json()
         )
         .then((json)=>{
-          console.log("Recebida resposta do ping,. Resposta", json);
+          //console.log("Recebida resposta do ping,. Resposta", json);
           this.setState({lastPing : json.pingTime});
         });
   }

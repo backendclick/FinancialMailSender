@@ -37,17 +37,17 @@ class BoletosList extends Component {
     return body;
   };
   
-  // handleOnSendMailsClick(event) {
-  //   console.log("handleOnSendMailsClick - invoked");
+  handleOnSendMailsClick = (event) => {
+    console.log("handleOnSendMailsClick - invoked");
 
-  //   this.sendMails()
-  //       .then((data) => {
-  //         console.info("then...", data);
-  //       })
-  //       .catch((data) => {
-  //         console.error("catch...", data);
-  //       });
-  // }
+    this.sendMails()
+        .then((data) => {
+          console.info("then...", data);
+        })
+        .catch((data) => {
+          console.error("catch...", data);
+        });
+  }
 
   handleUpdateBoletosOnClick = () => {
     this.updateBoletos();
@@ -65,7 +65,7 @@ class BoletosList extends Component {
         .catch(err => console.log(err));
   }
 
-  sendMails = async () => {
+  sendMailsOLD = async () => {
     const response = await fetch(
       "/sendMails",
       {
@@ -87,6 +87,25 @@ class BoletosList extends Component {
     if(200 !== response.status) throw Error(body.message);
     
     this.setState({boletos : body});
+  }
+
+  sendMails = async () => {
+    fetch(
+      "/sendMails",
+      {
+        method: "POST",
+        headers : {
+          "Accept" : "application/json",
+          "Content-type" : "application/json"
+        },
+        "body" : JSON.stringify(this.state.boletos)
+      }
+    )
+    .then(response => response.json())
+    .then((json)=>{
+      console.log("respondeu");
+      alert(JSON.stringify(json));
+    });
   }
 
   changeWillBeSent = (index, willBeSent) =>{

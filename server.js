@@ -3,18 +3,19 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const dayjs = require('dayjs');
-const port = process.env.PORT || 5000;
-
+require('dayjs/locale/pt-br');
+const nodemailer = require('nodemailer');
 const mongodb = require('mongodb'),
     MongoClient = mongodb.MongoClient;
+
+const port = process.env.PORT || 5000;
 const url = "mongodb://localhost:27017/";
 const dbName = "sampledb";
 
 const fromMail = 'tarapi007@gmail.com';
-const toMail = 'clickticonsultoria@gmail.com'
-
 const authUser = 'tarapi007@gmail.com';
-const authPass = 'generalize' ;
+const authPass = 'generalize';
+
 const path = "C:\\Users\\Diego\\Google Drive\\ClickTI Informática\\BOLETOS CLICKTI\\2019\\JAN\\";
 
 app.use(bodyParser.json());
@@ -29,9 +30,7 @@ if(developMongoUrl){
 
 app.post('/list', (req, res) => {
     let clients = [];
-    console.log("Requisição /list recebida;");
-
-    
+    console.log("============= Recebida requisição em: LIST ============");
     // let month = req.body.month;
     // if(!isValidMonth(month)){
     //     console.log("Mês inválido:", month);
@@ -40,35 +39,9 @@ app.post('/list', (req, res) => {
     //     );
     //     return;
     // }
- 
     fs.readdir(path, function(err, items) {
-
-        // for (var i=0; i<items.length; i++) {
-        //     let client = {};
-        //     let code = getCode(items[i]);
-        //     console.log("Iniciando recuperação do cliente: " + code)
-        //     client = getClient(code).then(function(){
-        //         console.log("Finalizada recuperação do cliente: " + code)
-        //         client.file = items[i];
-        //         client.sent = getSendStatus();
-        //         clients.push(client);
-        //         console.log("clients final:", clients);
-        //             res.send(
-        //                 clients
-        //             );
-        //     });
-           
-        // }
-        
         console.log("Iniciando fs.readdir", path);
-        // let inserts = [];
-        // (async function loop() {
-        //     for (let i = 0; i < SIZE; i++) {
-        //         await getClient("AMONTENEGRO");
-        //     }
-        //     console.log("await loop ends");
-        // })
-
+      
         let inserts = [];
         for (let i = 0; i < items.length; i++){
             let code = getCode(items[i]);
@@ -85,7 +58,6 @@ app.post('/list', (req, res) => {
                 values
             );
         });
-        
     });
 });
 
@@ -103,7 +75,7 @@ app.get("/bdPing", (req, res)=>{
                     console.log("[ bdPing ] - count: ", count);
                     res.send({
                         status: 1, 
-                        pingTime: dayjs().format('DD-MM-YYYY HH:mm:ss')
+                        pingTime: dayjs().format('DD/MM/YYYY HH:mm:ss')
                     })
                 })
         } catch (e){
@@ -113,18 +85,23 @@ app.get("/bdPing", (req, res)=>{
       });
     
 })
-app.post("/sendMails", (req)=>{
+app.post("/sendMails", (req, res)=>{
     console.log("Requisição recebida em /sendMails");
     //console.log("Body recebido", req.body);
     if("body" in req){
         req.body.map((item) => {
-            console.log("---------Item:", item); 
-            
+            console.log("---------Item:", item);
+            if(item.willBeSent == true){
+                EmailManager.sendMail(item);
+            } 
         });
 
     } else {
         console.log("req sem body")
     }
+    res.send({
+        status : 1
+    })
 });
 
 function getCode(fileName, month){
@@ -184,8 +161,8 @@ async function getClient(code, fileName){
 
 
 const EmailManager = {
-    sendMail : function (filename) {
-        console.log("EmailManager - Iniciando envio de email .  ");
+    sendMail : function (cliente) {
+        console.log("EmailManager - Iniciando envio de email . FileName: ", cliente);
         
         var transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -197,12 +174,17 @@ const EmailManager = {
         
         var mailOptions = {
             from: fromMail,
-            to: toMail,
-            subject: 'teste anexo', 
-            html: 'teste - corpo',
+            to: cliente.mail,
+            subject: `BOLETO ${dayjs().locale('pt-br').format('MMMM').toUpperCase()}/2019 - ClickTI Informática`, 
+            html: `<p>Bom dia.</p>
+
+            <p>Segue em anexo o boleto referente à ${dayjs().locale('pt-br').format('MMMM')}/2019 do contrato de manutenção dos computadores.</p>
+            
+            <p>Att</p>
+            `,
             attachments: [{
-                filename: filename,
-                path: `${path}${filename}`,
+                filename: cliente.file,
+                path: `${path}${cliente.file}`,
                 contentType: 'application/pdf'
             }]
         };
