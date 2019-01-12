@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "dayjs": "^1.7.8",
     "express": "^4.16.4",
     "material-icons-react": "^1.0.4",
     "mongodb": "^3.1.10",
+    "nodemailer": "^4.7.0",
     "react-materialize": "^2.6.0",
     "react-switch": "^3.0.4",
     "yarn": "^1.12.3"

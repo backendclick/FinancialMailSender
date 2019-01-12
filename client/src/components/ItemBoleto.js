@@ -5,7 +5,7 @@ class ItemBoleto extends Component {
 
     changeWillBeSent = () => {
         console.log("handleOnAnyChange. this.props.boleto.willBeSent: ", this.props.boleto.willBeSent);
-        this.props.changeWillBeSent(this.props.index, !this.props.boleto.willBeSent);
+        this.props.changeWillBeSent(this.props.key, !this.props.boleto.willBeSent);
     }
 
     render() {

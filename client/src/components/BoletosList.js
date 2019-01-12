@@ -3,6 +3,8 @@ import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 import ItemBoleto from './ItemBoleto';
 
+const dayjs = require('dayjs');
+
 class BoletosList extends Component {
   constructor(props){
     super(props);
@@ -14,7 +16,7 @@ class BoletosList extends Component {
       boletos : [ ],
       total : ''
     };
-    this.handleOnSendMailsClick = this.handleOnSendMailsClick.bind(this);
+    // this.handleOnSendMailsClick = this.handleOnSendMailsClick.bind(this);
   }
 
   componentDidMount() {
@@ -35,17 +37,17 @@ class BoletosList extends Component {
     return body;
   };
   
-  handleOnSendMailsClick(event) {
-    console.log("handleOnSendMailsClick - invoked");
+  // handleOnSendMailsClick(event) {
+  //   console.log("handleOnSendMailsClick - invoked");
 
-    this.sendMails()
-        .then((data) => {
-          console.info("then...", data);
-        })
-        .catch((data) => {
-          console.error("catch...", data);
-        });
-  }
+  //   this.sendMails()
+  //       .then((data) => {
+  //         console.info("then...", data);
+  //       })
+  //       .catch((data) => {
+  //         console.error("catch...", data);
+  //       });
+  // }
 
   handleUpdateBoletosOnClick = () => {
     this.updateBoletos();
@@ -58,7 +60,7 @@ class BoletosList extends Component {
             // this.setState({ responseToPost: res, lastUpdate : new Date() });
             console.log("updateBoletos - resposta:", boletos);
             console.log("State atual:  ", this.state);
-            this.setState({boletos : boletos, total: boletos.length, lastUpdate : new Date().toString()});
+            this.setState({boletos : boletos, total: boletos.length, lastUpdate : dayjs().format('DD/MM/YYYY HH:mm:ss')});
           })
         .catch(err => console.log(err));
   }
@@ -102,15 +104,15 @@ class BoletosList extends Component {
               {
                 this.state.boletos.map((boleto, index)=>
                   <ItemBoleto 
-                      index={index} 
+                      key={index} 
                       boleto={boleto}
                       changeWillBeSent={this.changeWillBeSent}  /> 
                 )
               }
           </ul>
           <div className="action-bar">
-            <button className="left" onClick={this.handleUpdateBoletosOnClick}><MaterialIcon icon="refresh" size={30} /></button>
-            <span className="left">Atualizado em <span className="last-update">{this.state.lastUpdate}</span></span>
+            <button className="left" style={{marginRight: 10, border: 'none', background: 'transparent'}} onClick={this.handleUpdateBoletosOnClick}><MaterialIcon icon="refresh" size={30} /></button>
+            <span className="left" style={{marginTop: 5}}>Atualizado em <span className="last-update">{this.state.lastUpdate}</span></span>
             <button onClick={this.handleOnSendMailsClick} className="btn btn-send-selecteds right">Enviar selecionados</button>
           </div>
       </div>
