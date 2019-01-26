@@ -32,6 +32,7 @@ if(developMongoUrl){
 }
 
 app.post('/list', (req, res) => {
+   try{
     let clients = [];
     console.log("============= Recebida requisição em: LIST ============");
     let nextMonth = req.body.nextMonth.toUpperCase();
@@ -68,38 +69,49 @@ app.post('/list', (req, res) => {
                 values[i].key = i;
             }
             res.send(
-                values
+                {
+                    status : 1,
+                    boletos : values
+                }
+                
             );
         });
     });
+   } catch (e) {
+    res.send({
+        status : -1,
+        message : e
+    });
+   }
 });
 
 app.get("/bdPing", (req, res)=>{
     console.log("============= Recebida requisição em: bdPing ============");
-    MongoClient.connect(url, (err, db)=>{
-        try{
-          if(err) {
-            throw err;
-          } 
-          db.db(dbName).collection("clientes")
-                .find({})
-                .count()
-                .then((count)=>{
-                    console.log("[ bdPing ] - count: ", count);
-                    db.close();
-                    res.send({
-                        status: 1, 
-                        pingTime: dayjs().format('DD/MM/YYYY HH:mm:ss')
-                    })
-                })
-        } catch (e){
-          console.error("[ bdPing ] - ", e);
-          db.close();
-          res.send({status: -1, msg: e})
-        } 
-      });
-    
+    try{
+        MongoClient.connect(url, (err, db)=>{
+            if(err) {
+                res.send({status: -1, msg: err});
+            } else {
+                db.db(dbName).collection("clientes")
+                        .find({})
+                        .count()
+                        .then((count)=>{
+                            console.log("[ bdPing ] - count: ", count);
+                            db.close();
+                            res.send({
+                                status: 1, 
+                                pingTime: dayjs().format('DD/MM/YYYY HH:mm:ss')
+                            })
+                        })  
+            } 
+        });
+    } catch (e){
+        console.error("[ bdPing ] - ERROR: ", e);
+        try{db.close();} catch (e){console.log("Error closing conn", e)} 
+        res.send({status: -1, msg: e})
+    } 
 })
+
 app.post("/sendMails", (req, res)=>{
     console.log("Requisição recebida em /sendMails");
     //console.log("Body recebido", req.body);

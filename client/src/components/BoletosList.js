@@ -67,13 +67,21 @@ class BoletosList extends Component {
   fetchBoletos = () =>{
     console.log("fetchBoletos invoked");
     this.callBoletosApi()
-        .then(boletos => {
-            // this.setState({ responseToPost: res, lastUpdate : new Date() });
-            console.log("fetchBoletos - resposta:", boletos);
-            console.log("State atual:  ", this.state);
-            this.setState({boletos : boletos, total: boletos.length, lastUpdate : dayjs().format('DD/MM/YYYY HH:mm:ss')});
-          })
-        .catch(err => console.log(err));
+        .then(response => {
+            if(response.status == 1){
+              console.log("fetchBoletos - resposta:", response.boletos);
+              console.log("State atual:  ", this.state);
+              this.setState({
+                boletos : response.boletos, 
+                total: response.boletos.length, 
+                lastUpdate : dayjs().format('DD/MM/YYYY HH:mm:ss')
+              });
+            } else {
+              alert("[fetchBoletos] - Retornou com status -1");
+              console.log(JSON.stringify(response.message))
+            }
+        })
+        .catch(err => console.log("[fetchBoletos] - ERROR:", err));
   }
   
   handleOnFetchBoletosClick = () => {
