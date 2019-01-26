@@ -12,16 +12,17 @@ class BoletosList extends Component {
       response: '',
       post: '',
       responseToPost: '',
+      nextMonth : dayjs().add(1, 'month').format('MMM').toUpperCase(),
       lastUpdate : '',
       boletos : [ ],
       total : ''
     };
-    // this.handleOnSendMailsClick = this.handleOnSendMailsClick.bind(this);
+    console.log("BoletosList constrúido. state:", this.state.nextMonth);
   }
 
   componentDidMount() {
     console.log("componentDidMount invoked");
-    this.updateBoletos();
+    this.fetchBoletos();
   }
 
   callBoletosApi = async () => {
@@ -30,7 +31,8 @@ class BoletosList extends Component {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body : JSON.stringify({ nextMonth : this.state.nextMonth})
     });
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
@@ -49,16 +51,16 @@ class BoletosList extends Component {
         });
   }
 
-  handleUpdateBoletosOnClick = () => {
-    this.updateBoletos();
+  handleFetchBoletosOnClick = () => {
+    this.fetchBoletos();
   }
 
-  updateBoletos = () =>{
-    console.log("updateBoletos invoked");
+  fetchBoletos = () =>{
+    console.log("fetchBoletos invoked");
     this.callBoletosApi()
         .then(boletos => {
             // this.setState({ responseToPost: res, lastUpdate : new Date() });
-            console.log("updateBoletos - resposta:", boletos);
+            console.log("fetchBoletos - resposta:", boletos);
             console.log("State atual:  ", this.state);
             this.setState({boletos : boletos, total: boletos.length, lastUpdate : dayjs().format('DD/MM/YYYY HH:mm:ss')});
           })
@@ -130,7 +132,7 @@ class BoletosList extends Component {
               }
           </ul>
           <div className="action-bar">
-            <button className="left" style={{marginRight: 10, border: 'none', background: 'transparent'}} onClick={this.handleUpdateBoletosOnClick}><MaterialIcon icon="refresh" size={30} /></button>
+            <button className="left" style={{marginRight: 10, border: 'none', background: 'transparent'}} onClick={this.handleFetchBoletosOnClick}><MaterialIcon icon="refresh" size={30} /></button>
             <span className="left" style={{marginTop: 5}}>Atualizado em <span className="last-update">{this.state.lastUpdate}</span></span>
             <button onClick={this.handleOnSendMailsClick} className="btn btn-send-selecteds right">Enviar selecionados</button>
           </div>

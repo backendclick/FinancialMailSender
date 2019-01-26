@@ -16,7 +16,7 @@ const fromMail = 'tarapi007@gmail.com';
 const authUser = 'tarapi007@gmail.com';
 const authPass = 'generalize';
 
-const path = "C:\\Users\\Diego\\Google Drive\\ClickTI Informática\\BOLETOS CLICKTI\\2019\\JAN\\";
+const path = "C:\\Users\\Diego\\Google Drive\\ClickTI Informática\\BOLETOS CLICKTI\\2019\\";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -26,11 +26,16 @@ app.use(bodyParser.urlencoded({
 var developMongoUrl = process.env.developMongoUrl;
 if(developMongoUrl){
   console.log("developMongoUrl: ", developMongoUrl);
+} else {
+    console.log("Não foi encontrado developMongoUrl;")
+    return;
 }
 
 app.post('/list', (req, res) => {
     let clients = [];
     console.log("============= Recebida requisição em: LIST ============");
+    let nextMonth = req.body.nextMonth.toUpperCase();
+    console.log(">>>>>>>>>>>>>>>>>var NextMonth: ", nextMonth);
     // let month = req.body.month;
     // if(!isValidMonth(month)){
     //     console.log("Mês inválido:", month);
@@ -39,18 +44,26 @@ app.post('/list', (req, res) => {
     //     );
     //     return;
     // }
-    fs.readdir(path, function(err, items) {
-        console.log("Iniciando fs.readdir", path);
+    let fullPath = path + nextMonth + "\\";
+    fs.readdir(fullPath, function(err, items) {
+        
+        console.log("Iniciando varredura de boletos na pasta - " + fullPath );
+        console.log("Mês selecionado - ", nextMonth);
+        console.log("Qtde de arquivos encontrados na pasta - ", items.length);
+        let boletosDoMes = items.filter((item) => {
+            let month = extractMonth(item);
+            return month == nextMonth;
+        });
+        console.log("Qtde de arquivos do mês - ",  boletosDoMes.length);
       
-        let inserts = [];
-        for (let i = 0; i < items.length; i++){
-            let code = getCode(items[i]);
-            inserts.push(getClient(code,items[i]));
+        let selects = [];
+        for (let i = 0; i < boletosDoMes.length; i++){
+            let code = extractCode(boletosDoMes[i]);
+            selects.push(getClient(code,boletosDoMes[i]));
         }
 
-        Promise.all(inserts).then(values => { 
+        Promise.all(selects).then(values => { 
             console.log("resultado do promise all", values);
-            counteredValues = [];
             for(let i=0;i<values.length;i++){
                 values[i].key = i;
             }
@@ -73,6 +86,7 @@ app.get("/bdPing", (req, res)=>{
                 .count()
                 .then((count)=>{
                     console.log("[ bdPing ] - count: ", count);
+                    db.close();
                     res.send({
                         status: 1, 
                         pingTime: dayjs().format('DD/MM/YYYY HH:mm:ss')
@@ -80,6 +94,7 @@ app.get("/bdPing", (req, res)=>{
                 })
         } catch (e){
           console.error("[ bdPing ] - ", e);
+          db.close();
           res.send({status: -1, msg: e})
         } 
       });
@@ -104,11 +119,22 @@ app.post("/sendMails", (req, res)=>{
     })
 });
 
-function getCode(fileName, month){
-    console.log("Iniciando getCode:" + fileName);
-    let clientNameGroups = /BOLETO JAN\s?2019\s?-\s?(\w*)[\s\.]/.exec(fileName);
-    console.log("===================Finalizado getCode. Nome do cliente extraído", clientNameGroups);
+function extractCode(fileName, month){
+    console.log("Iniciando extractCode:" + fileName);
+    var rgx = /.*2019\s?-\s?(\w*)[\s\.]/g;
+    let clientNameGroups = rgx.exec(fileName);
+    console.log("===================Finalizado extractCode. Grupo extraído", clientNameGroups);
     return clientNameGroups[1];
+}
+
+function extractMonth(fileName){
+    console.log("[extractMonth] - Invoked. FileName - ", fileName);
+
+    var rgx = /BOLETO\s*(\w*)\s*2019\s*-\s*/g;
+
+    let group1 = rgx.exec(fileName);
+    console.log("===================[extractMonth] - Finalizado. Grupo extraído", group1);
+    return group1[1];
 }
 
 function isValidMonth(month){ 
