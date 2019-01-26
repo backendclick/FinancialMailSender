@@ -20,6 +20,7 @@ const monthOptions = [
   { value: 'NOV', label: 'NOV' },
   { value: 'DEC', label: 'DEC' }
 ];
+
 class BoletosList extends Component {
   constructor(props){
     super(props);
@@ -56,29 +57,11 @@ class BoletosList extends Component {
     return body;
   };
   
-  handleOnSendMailsClick = (event) => {
-    console.log("handleOnSendMailsClick - invoked");
-
-    this.sendMails()
-        .then((data) => {
-          console.info("then...", data);
-        })
-        .catch((data) => {
-          console.error("catch...", data);
-        });
-  }
-
-  handleOnMonthChanged = (item) => {
-    console.log(item);
-    this.setState({
-      nextMonth : item.value
-    }
-  );
-    
-  }
-
-  handleFetchBoletosOnClick = () => {
-    this.fetchBoletos();
+  changeWillBeSent = (index, willBeSent) =>{
+    console.log("[BoletosList] - function alteraWillBeSent invoked. Param index:" + index + " - Param willBeSent:" + willBeSent);
+    let boletos = this.state.boletos;
+    boletos[index].willBeSent = willBeSent;
+    this.setState({"boletos" : boletos });
   }
 
   fetchBoletos = () =>{
@@ -92,29 +75,28 @@ class BoletosList extends Component {
           })
         .catch(err => console.log(err));
   }
+  
+  handleOnFetchBoletosClick = () => {
+    this.fetchBoletos();
+  }
 
-  sendMailsOLD = async () => {
-    const response = await fetch(
-      "/sendMails",
-      {
-        method: "POST",
-        headers : {
-          "Accept" : "application/json",
-          "Content-type" : "application/json"
-        },
-        "body" : JSON.stringify(this.state.boletos)
-      }
-    );
+  handleOnMonthChanged = (item) => {
+    console.log(item);
+    this.setState({
+      nextMonth : item.value
+    });
+  }
 
-    console.log("Retornou. Aguarde resposta");
+  handleOnSendMailsClick = (event) => {
+    console.log("handleOnSendMailsClick - invoked");
 
-    const body = await response.json();
-
-    console.log("Resposta: ", body);
-
-    if(200 !== response.status) throw Error(body.message);
-    
-    this.setState({boletos : body});
+    this.sendMails()
+        .then((data) => {
+          console.info("then...", data);
+        })
+        .catch((data) => {
+          console.error("catch...", data);
+        });
   }
 
   sendMails = async () => {
@@ -134,13 +116,6 @@ class BoletosList extends Component {
       console.log("respondeu");
       alert(JSON.stringify(json));
     });
-  }
-
-  changeWillBeSent = (index, willBeSent) =>{
-    console.log("[BoletosList] - function alteraWillBeSent invoked. Param index:" + index + " - Param willBeSent:" + willBeSent);
-    let boletos = this.state.boletos;
-    boletos[index].willBeSent = willBeSent;
-    this.setState({"boletos" : boletos });
   }
 
   render() {
@@ -167,7 +142,7 @@ class BoletosList extends Component {
               }
           </ul>
           <div className="action-bar">
-            <button className="left" style={{marginRight: 10, border: 'none', background: 'transparent'}} onClick={this.handleFetchBoletosOnClick}><MaterialIcon icon="refresh" size={30} /></button>
+            <button className="left" style={{marginRight: 10, border: 'none', background: 'transparent'}} onClick={this.handleOnFetchBoletosClick}><MaterialIcon icon="refresh" size={30} /></button>
             <span className="left" style={{marginTop: 5}}>Atualizado em <span className="last-update">{this.state.lastUpdate}</span></span>
             <button onClick={this.handleOnSendMailsClick} className="btn btn-send-selecteds right">Enviar selecionados</button>
           </div>
